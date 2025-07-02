@@ -1,0 +1,309 @@
+{
+  "id": "1b006aba-10e8-4c14-8dd3-f3255cb6227d",
+  "revision": 0,
+  "last_node_id": 13,
+  "last_link_id": 8,
+  "nodes": [
+    {
+      "id": 11,
+      "type": "SaveImage",
+      "pos": [
+        1234.6241455078125,
+        -380.98382568359375
+      ],
+      "size": [
+        270,
+        270
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.43"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "PreviewAudio",
+      "pos": [
+        1440.5986328125,
+        201.0655975341797
+      ],
+      "size": [
+        313.98980712890625,
+        95.0707015991211
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 8
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.43",
+        "Node name for S&R": "PreviewAudio"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 2,
+      "type": "PreviewAudio",
+      "pos": [
+        1431.76708984375,
+        -38.941341400146484
+      ],
+      "size": [
+        313.98980712890625,
+        95.0707015991211
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 4
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.43",
+        "Node name for S&R": "PreviewAudio"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 12,
+      "type": "GoogleAIStudioImageGen",
+      "pos": [
+        794.4146118164062,
+        -357.2606506347656
+      ],
+      "size": [
+        400,
+        262
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GoogleAIStudioImageGen"
+      },
+      "widgets_values": [
+        "a comedian at a show infront of a brick wall",
+        "",
+        "gemini-2.0-flash-preview-image-generation",
+        "",
+        "1:1",
+        "BLOCK_NONE",
+        "ALLOW_ALL"
+      ]
+    },
+    {
+      "id": 1,
+      "type": "GoogleAIStudioTTS",
+      "pos": [
+        987.5201416015625,
+        -36.79597473144531
+      ],
+      "size": [
+        400,
+        200
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "slot_index": 0,
+          "links": [
+            4
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GoogleAIStudioTTS"
+      },
+      "widgets_values": [
+        "What's going on!?",
+        "",
+        "gemini-2.5-flash-preview-tts",
+        "Kore (Firm)",
+        "Say in comedically with laughing:"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "GoogleAIStudioMultiSpeakerTTS",
+      "pos": [
+        980.30908203125,
+        233.38528442382812
+      ],
+      "size": [
+        400,
+        328
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GoogleAIStudioMultiSpeakerTTS"
+      },
+      "widgets_values": [
+        "Fred: Knock Knock!\nBob: Who's there?\nFred: Luke!\nBob: Luke who?\nFred: Luke through the keyhole to see me!",
+        "",
+        "gemini-2.5-flash-preview-tts",
+        "Fred",
+        "Kore (Firm)",
+        "Bob",
+        "Puck (Upbeat)",
+        "",
+        "Zephyr (Bright)",
+        "",
+        "Charon (Informative)"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "GoogleAIStudioTextGen",
+      "pos": [
+        532.6006469726562,
+        -14.198040008544922
+      ],
+      "size": [
+        417.17169189453125,
+        310
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GoogleAIStudioTextGen"
+      },
+      "widgets_values": [
+        "Tell me a single line joke about women.",
+        "",
+        "gemini-2.0-flash-001",
+        "you are a raw comedian who makes dirty jokes",
+        0.7,
+        1024
+      ]
+    }
+  ],
+  "links": [
+    [
+      4,
+      1,
+      0,
+      2,
+      0,
+      "AUDIO"
+    ],
+    [
+      5,
+      9,
+      0,
+      1,
+      0,
+      "STRING"
+    ],
+    [
+      7,
+      12,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      8,
+      7,
+      0,
+      13,
+      0,
+      "AUDIO"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.7513148009015777,
+      "offset": [
+        -362.7016189336868,
+        828.0201449504124
+      ]
+    },
+    "node_versions": {
+      "comfy-core": "0.3.43"
+    },
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true,
+    "frontendVersion": "1.23.4"
+  },
+  "version": 0.4
+}
