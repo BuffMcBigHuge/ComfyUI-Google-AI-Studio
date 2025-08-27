@@ -7,6 +7,7 @@ import io
 import os
 import tempfile
 import wave
+import base64
 import folder_paths
 import numpy as np
 import torch
@@ -336,7 +337,8 @@ class GoogleAIStudioImageGenNode:
     """
     
     IMAGE_MODELS = [
-        "gemini-2.0-flash-preview-image-generation",  # Gemini image generation
+        "gemini-2.0-flash-preview-image-generation",  # Gemini 2.0 Flash image generation
+        "gemini-2.5-flash-image-preview",             # Gemini 2.5 Flash image generation
         "imagen-3.0-generate-002",                    # Imagen models (paid tier)
         "imagen-3.0-fast-generate-001"
     ]
@@ -362,6 +364,9 @@ class GoogleAIStudioImageGenNode:
                 }),
             },
             "optional": {
+                "input_image": ("IMAGE", {
+                    "tooltip": "Input image for editing/modification (Gemini models only)"
+                }),
                 "negative_prompt": ("STRING", {
                     "multiline": True,
                     "default": "",
@@ -388,8 +393,49 @@ class GoogleAIStudioImageGenNode:
     CATEGORY = "Google AI Studio"
     DESCRIPTION = "Generate images using Gemini (free tier, basic controls) or Imagen (paid tier, advanced controls)"
 
+    def _convert_comfyui_image_to_base64(self, image_tensor: torch.Tensor) -> List[str]:
+        """
+        Convert ComfyUI image tensor(s) to base64 encoded PNG(s)
+        Returns a list of base64 strings, one per image in the batch
+        """
+        from PIL import Image
+        import io
+        
+        # ComfyUI format: [batch, height, width, channels] with values in [0, 1]
+        if len(image_tensor.shape) == 3:
+            # Single image without batch dimension, add it
+            image_tensor = image_tensor.unsqueeze(0)
+        
+        batch_size = image_tensor.shape[0]
+        base64_images = []
+        
+        for i in range(batch_size):
+            # Get single image from batch
+            single_image = image_tensor[i]
+            
+            # Convert to uint8
+            image_array = (single_image.cpu().numpy() * 255).astype(np.uint8)
+            
+            # Ensure RGB format
+            if len(image_array.shape) == 2:  # Grayscale
+                image_array = np.stack([image_array] * 3, axis=-1)
+            elif image_array.shape[2] == 4:  # RGBA
+                image_array = image_array[:, :, :3]  # Remove alpha channel
+            
+            # Create PIL Image
+            pil_image = Image.fromarray(image_array, 'RGB')
+            
+            # Convert to base64
+            buffer = io.BytesIO()
+            pil_image.save(buffer, format='PNG')
+            image_bytes = buffer.getvalue()
+            
+            base64_images.append(base64.b64encode(image_bytes).decode('utf-8'))
+        
+        return base64_images
+
     def generate_image(self, prompt: str, api_key: str, model: str,
-                      negative_prompt: str = "", aspect_ratio: str = "1:1",
+                      input_image=None, negative_prompt: str = "", aspect_ratio: str = "1:1",
                       safety_filter_level: str = "BLOCK_MEDIUM_AND_ABOVE",
                       person_generation: str = "ALLOW_ALL") -> tuple:
         """
@@ -413,14 +459,40 @@ class GoogleAIStudioImageGenNode:
                 # Use Gemini's generate_content with image response modality
                 # Note: Gemini models don't support Imagen-specific parameters like
                 # safety_filter_level, person_generation, or aspect_ratio
+                
+                # Prepare content parts
+                content_parts = []
+                
+                # Add input images if provided (for image editing/modification)
+                if input_image is not None:
+                    image_base64_list = self._convert_comfyui_image_to_base64(input_image)
+                    # Add all images from the batch to content parts
+                    for image_base64 in image_base64_list:
+                        content_parts.append(
+                            types.Part.from_bytes(
+                                data=base64.b64decode(image_base64),
+                                mime_type="image/png"
+                            )
+                        )
+                
+                # Add text prompt
                 full_prompt = prompt
                 if negative_prompt.strip():
                     full_prompt += f"\n\nAvoid: {negative_prompt.strip()}"
+                content_parts.append(types.Part.from_text(text=full_prompt))
+                
+                # Create content with multimodal parts
+                contents = [
+                    types.Content(
+                        role="user",
+                        parts=content_parts
+                    )
+                ]
                 
                 # Gemini models use their own safety system, not Imagen's safety filter levels
                 response = client.models.generate_content(
                     model=model,
-                    contents=full_prompt,
+                    contents=contents,
                     config=types.GenerateContentConfig(
                         response_modalities=['TEXT', 'IMAGE']
                         # Note: No safety_filter_level, person_generation, or aspect_ratio

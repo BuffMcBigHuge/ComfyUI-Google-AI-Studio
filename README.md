@@ -8,6 +8,8 @@ This custom node package provides integration with Google AI Studio's latest API
 
 - **Text Generation**: Generate creative text, stories, essays using Gemini models
 - **Image Generation**: Create stunning images using Google's Gemini (free) and Imagen (paid) models
+- **Image Editing**: Edit existing images using Gemini 2.5 Flash with multimodal input support
+- **Batch Processing**: Process multiple images simultaneously in a single API call
 - **Google AI Studio TTS**: Convert text to speech using Google's Gemini TTS models
 - **Multi-Speaker TTS**: Generate conversations with multiple distinct voices
 - **30+ Voice Options**: Choose from a wide variety of high-quality voices with style descriptions
@@ -58,13 +60,15 @@ Creates images using Google's Gemini and Imagen models from text descriptions.
 
 **Available Models:**
 - `gemini-2.0-flash-preview-image-generation` - **Free tier** (default, basic controls)
+- `gemini-2.5-flash-image-preview` - **Free tier** (newest Gemini model, basic controls)
 - `imagen-3.0-generate-002` - **Paid tier** (high quality, advanced controls)
 - `imagen-3.0-fast-generate-001` - **Paid tier** (faster generation, advanced controls)
 
 **Inputs:**
-- `prompt`: Description of the image to generate
+- `prompt`: Description of the image to generate or edit
 - `api_key`: Your Google AI Studio API key
 - `model`: Choose from available models above
+- `input_image` (optional): Input image(s) for editing/modification - supports batch processing *(⚠️ Gemini models only)*
 - `negative_prompt` (optional): What you don't want in the image *(works with all models)*
 - `aspect_ratio` (optional): Image proportions *(⚠️ Imagen only - ignored for Gemini)*
 - `safety_filter_level` (optional): Content filtering *(⚠️ Imagen only - ignored for Gemini)*
@@ -105,6 +109,7 @@ Generates conversations with multiple distinct voices.
 | Feature | Gemini Models (Free) | Imagen Models (Paid) |
 |---------|---------------------|---------------------|
 | Text-to-image | ✅ | ✅ |
+| Image-to-image editing | ✅ | ❌ |
 | Negative prompts | ✅ (in main prompt) | ✅ (separate parameter) |
 | Aspect ratio control | ❌ | ✅ |
 | Safety filter levels | ❌ (built-in safety) | ✅ |
@@ -163,6 +168,22 @@ The TTS models automatically detect input language and support 24 languages incl
 3. Enter your API key
 4. Select model: `gemini-2.0-flash-preview-image-generation` (free tier, default)
 5. For advanced controls (paid tier), switch to `imagen-3.0-generate-002` and adjust aspect ratio, safety settings
+6. Connect output to image preview or save node
+
+### Image Editing Example
+1. Add a "Google AI Studio Image Generator" node
+2. Connect an input image to the `input_image` parameter
+3. Enter your editing prompt: `"Add a rainbow in the sky and make it look more vibrant"`
+4. Enter your API key
+5. Select a Gemini model (2.0 or 2.5 Flash - image editing only works with Gemini models)
+6. Connect output to image preview or save node
+
+### Batch Image Processing Example
+1. Add a "Google AI Studio Image Generator" node
+2. Connect a batch of images to the `input_image` parameter (e.g., from an image batch loader)
+3. Enter your editing prompt: `"Apply vintage film effect to these images"`
+4. Enter your API key
+5. Select a Gemini model - all images in the batch will be sent in a single API call
 6. Connect output to image preview or save node
 
 ### Basic TTS Example
@@ -236,6 +257,30 @@ For Google AI Studio API issues:
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Changelog
+
+### v1.1.0 - Image Editing & Batch Processing
+
+![Image Editing Example](images/image-2.png)
+*New Feature: Image editing with Gemini 2.5 Flash - example shows transforming Darth Vader with the prompt "put the character on the beach"*
+
+#### 🆕 New Features
+- **Image Editing Support**: Added Gemini 2.5 Flash image editing capabilities
+  - Edit existing images with text prompts using multimodal input
+  - Supports single images or batch processing
+  - Works with all ComfyUI image nodes and workflows
+
+- **Gemini 2.5 Flash Image Model**: Added `gemini-2.5-flash-image-preview`
+  - Latest Google image generation model
+  - Free tier access with advanced capabilities
+  - Enhanced image quality and prompt understanding
+
+#### 🔄 Improvements
+- Enhanced Image Generator node with optional `input_image` parameter
+- Updated API integration with proper multimodal Content/Part structure
+- Improved batch processing efficiency for multiple images
+- Better error handling for image conversion and processing
 
 ---
 
